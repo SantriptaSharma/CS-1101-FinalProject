@@ -10,7 +10,7 @@ class ParseResults:
     norms : List[Tuple[float,float,float]] = []
     texs  : List[Tuple[float,float]] = []
     faces : List[Face] = []
-    edges : Dict[Edge, Face] = {}
+    edges : Dict[Edge, List[Face]] = {}
 
     def display(self):
         print("PARSE RESULTS")
@@ -95,7 +95,8 @@ def ConsumeFace(results: ParseResults, tokens : List[str]):
         
         edges.append(Edge(vert_data[0], next_vert_index))
 
-    this_face = Face(verts)
+    face_index = len(results.faces)
+    this_face = Face(verts, face_index)
     
     for edge in edges:
         if(edge in results.edges):
