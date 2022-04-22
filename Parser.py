@@ -1,4 +1,5 @@
 from io import TextIOWrapper
+from os import path
 from typing import Dict, List, Tuple
 from Edge import Edge
 from Face import Face, FaceVertex
@@ -89,7 +90,7 @@ def ConsumeFace(results: ParseResults, tokens : List[str]):
         
         verts.append(FaceVertex(vert_data[0], vert_data[1], vert_data[2]))
         
-        next_vert_index = 0
+        next_vert_index = int(tokens[1].split("/")[0])
         if(i != n-1):
             next_vert_index = int(tokens[i+1].split("/")[0])-1
         
@@ -129,3 +130,16 @@ def Parse(wavefront : TextIOWrapper) -> ParseResults:
             ConsumeLine(result, tokens, in_object)
     
     return result
+
+if __name__ == "__main__":
+    file_path = "examples/flap.obj"
+    
+    if(not path.exists(file_path)):
+        print(f"File {path.abspath(file_path)} not found.")
+        exit(1)
+
+    results = None
+    with open(file_path, "r") as f:
+        results = Parse(f)
+    
+    results.display()
