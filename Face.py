@@ -14,8 +14,12 @@ class FaceVertex:
 class Face:
     index : int = -1
     verts : List[FaceVertex] = []
-
+    face_center = -32
+    
     def get_face_center(self, results):
+        if(self.face_center != -32):
+            return self.face_center
+        
         positions = []
         for v in self.verts:
             positions.append(results.verts[v.vert])
@@ -26,11 +30,13 @@ class Face:
 
         n = len(positions)
 
-        return Scale_Positions(summed, 1/n)
+        self.face_center = Scale_Positions(summed, 1/n)
+        return self.face_center
 
     def __init__(self, vertices : List[FaceVertex], index : int):
         self.verts = vertices
         self.index = index
+        self.face_center = -32
 
     def __repr__(self):
         return str(self)

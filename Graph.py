@@ -1,6 +1,7 @@
 import math
 from typing import List
 from Parser import ParseResults
+from Edge import Edge
 from Utility import Squared_Distance
 
 GraphRepresentation = {"LIST": 0, "MATRIX": 1}
@@ -35,14 +36,13 @@ class Graph:
             return self.data[v]
         else:
             res = []
-
             for i in range(len(self.data)):
-                if(self.data[v][i] != -1.0):
+                if(self.data[v][i] != -1.0 and i != v):
                     res.append(i)
             
             return res
 
-def ParseIntoGraph(results : ParseResults) -> Graph:
+def ParseIntoGraph(results : ParseResults, forcetype = -1) -> Graph:
     edge_count = 0
     face_count = len(results.faces)
     
@@ -61,39 +61,95 @@ def ParseIntoGraph(results : ParseResults) -> Graph:
     '''
 
     graph_type = GraphRepresentation["LIST"]
-
+    
     if(graph_density > 1/32):
         graph_type = GraphRepresentation["MATRIX"]
+    
+    if(forcetype != -1):
+        graph_type = forcetype
 
     print(f"Graph Type: {graph_type}")
 
     data = []
 
     if(graph_type == GraphRepresentation["LIST"]):
+        data = [[] for i in range(face_count)] 
         for edge in results.edges:
             connected_faces = results.edges[edge]
             center = edge.get_edge_center(results)
 
-            for face in connected_faces:
-                adjacency_list_for_face = []
+            if len(connected_faces) < 2:
+                continue
 
+            considered_through_edge = []
+
+            for face in connected_faces:
                 for in_face in connected_faces:
-                    if(face.index == in_face.index): continue
+                    if(face.index == in_face.index or Edge(face.index, in_face.index) in considered_through_edge):
+                        continue
+
                     sqr_distance = Squared_Distance(in_face.get_face_center(results), center) + Squared_Distance(center, face.get_face_center(results))
-                    adjacency_list_for_face.append((in_face.index, sqr_distance))
-                data.append(adjacency_list_for_face)
+                    
+                    index_in_adjacency = -1
+
+                    for (i,adjacent) in enumerate(data[face.index]):
+                        if adjacent[0] == in_face.index:
+                            index_in_adjacency = i
+                            break
+                    
+                    if index_in_adjacency == -1:
+                        data[face.index].append((in_face.index, sqr_distance))
+                        data[in_face.index].append((face.index, sqr_distance))
+                    else:
+                        current_distance = data[face.index][index_in_adjacency][1]
+                        data[face.index][index_in_adjacency] = (in_face.index, min(current_distance, sqr_distance))
+
+                        inverse_index = -1
+
+                        for (i, adjacent) in enumerate(data[in_face.index]):
+                            if(adjacent[0] == face.index):
+                                inverse_index = i
+                                break
+                        
+                        if(inverse_index == -1):
+                            print("Something went horribly wrong while parsing")
+                            exit(1)
+
+                        data[in_face.index][inverse_index] = (face.index, min(current_distance, sqr_distance))
+
+                    considered_through_edge.append(Edge(face.index, in_face.index)) 
     else:
-        data = [ [-1.0] * face_count ] * face_count
+        data = [[-1.0 for j in range(face_count)] for i in range(face_count)]
+
         for edge in results.edges:
             connected_faces = results.edges[edge]
             center = edge.get_edge_center(results)
+            if len(connected_faces) < 2:
+                continue
+
+            considered_through_edge = []
 
             for face in connected_faces:
                 for in_face in connected_faces:
-                    if(face.index == in_face.index or data[face.index][in_face.index] != -1.0): continue
+                    if(face.index == in_face.index or Edge(face.index, in_face.index) in considered_through_edge):
+                        continue
 
                     sqr_distance = Squared_Distance(in_face.get_face_center(results), center) + Squared_Distance(center, face.get_face_center(results))
-                    data[face.index][in_face.index] = sqr_distance
-                    data[in_face.index][face.index] = sqr_distance
+            
+                    considered_through_edge.append(Edge(face.index, in_face.index))
+
+                    if(data[face.index][in_face.index] == -1):
+                        data[face.index][in_face.index] = sqr_distance
+                        data[in_face.index][face.index] = sqr_distance
+                    else:
+                        c_val = data[face.index][in_face.index]
+                        n_val = min(c_val, sqr_distance)
+
+                        if(n_val == c_val): continue
+
+                        data[face.index][in_face.index] = n_val
+                        data[in_face.index][face.index] = n_val
+                
+                data[face.index][face.index] = 0.0
 
     return Graph(graph_type, data)
