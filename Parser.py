@@ -92,9 +92,9 @@ def ConsumeFace(results: ParseResults, tokens : List[str]):
         
         next_vert_index = int(tokens[1].split("/")[0])
         if(i != n-1):
-            next_vert_index = int(tokens[i+1].split("/")[0])-1
+            next_vert_index = int(tokens[i+1].split("/")[0])
         
-        edges.append(Edge(vert_data[0], next_vert_index))
+        edges.append(Edge(vert_data[0], next_vert_index - 1))
 
     face_index = len(results.faces)
     this_face = Face(verts, face_index)
