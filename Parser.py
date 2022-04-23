@@ -5,6 +5,7 @@ from Edge import Edge
 from Face import Face, FaceVertex
 
 class ParseResults:
+    """Class holding a legible representation of the target wavefront .obj file."""
     global_props : List[str] = []
     object_props : List[str] = []
     verts : List[Tuple[float,float,float]] = []
@@ -47,12 +48,14 @@ class ParseResults:
         self.edges = {}
 
 def ConsumeLine(results : ParseResults, tokens : List[str], in_object : bool):
+    """Consume a line of unknown type from the .obj file. We ignore these lines, and write them into our properties buffers, which are written back into the output .obj file as they were."""
     if(in_object):
         results.object_props.append(" ".join(tokens))
     else:
         results.global_props.append(" ".join(tokens))
 
 def ConsumeVertex(results : ParseResults, tokens : List[str]):
+    """Consume a vertex position definition from the .obj file."""
     if(len(tokens) != 4):
         print("Vertex Coordinates Cannot be n-dimensional (n>3). Exiting.")
         exit(1)
@@ -60,6 +63,7 @@ def ConsumeVertex(results : ParseResults, tokens : List[str]):
     results.verts.append(tuple([float(token) for token in tokens[1:]]))
 
 def ConsumeTexture(results : ParseResults, tokens : List[str]):
+    """Consume a vertex texture coordinate definition from the .obj file. We do not use them, and simply write them back into the output .obj file as they were."""
     if(len(tokens) != 3):
         print("Texture Coordinates Cannot be n-dimensional (n>2). Exiting.")
         exit(1)
@@ -67,6 +71,7 @@ def ConsumeTexture(results : ParseResults, tokens : List[str]):
     results.texs.append(tuple([float(token) for token in tokens[1:]]))
 
 def ConsumeNormal(results: ParseResults, tokens : List[str]):
+    """Consume a vertex normal direction definition from the .obj file. We do not use them, and simply write them back into the output .obj file as they were."""
     if(len(tokens) != 4):
         print("Vertex Normals Cannot be n-dimensional (n>3). Exiting.")
         exit(1)
@@ -74,6 +79,7 @@ def ConsumeNormal(results: ParseResults, tokens : List[str]):
     results.norms.append(tuple([float(token) for token in tokens[1:]]))
 
 def ConsumeFace(results: ParseResults, tokens : List[str]):
+    """Consume a face definition from the .obj file. This function also has the side-effect of generating edges, which are used to create the graph later."""
     verts : List[FaceVertex] = []
     edges : List[Edge] = []
 
@@ -110,6 +116,7 @@ def ConsumeFace(results: ParseResults, tokens : List[str]):
 function_table = {"v": ConsumeVertex, "vt": ConsumeTexture, "vn": ConsumeNormal, "f": ConsumeFace}
 
 def Parse(wavefront : TextIOWrapper) -> ParseResults:
+    """Pareses a given input stream (assumed to be a .obj file) and returns a ParseResults object."""
     result = ParseResults()
     in_object = False
     for line in wavefront.readlines():

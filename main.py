@@ -62,7 +62,7 @@ def main():
     with open(final_file_path, "r") as f:
         results = Parse(f)
     
-    graph = ParseIntoGraph(results, 1)
+    graph = ParseIntoGraph(results)
 
     print("-"*30)
     print("GRAPH DATA DUMP")

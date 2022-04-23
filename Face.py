@@ -2,6 +2,7 @@ from typing import List
 from Utility import Add_Positions, Scale_Positions
 
 class FaceVertex:
+    """Represents a vertex on a face, storing the indices of its vertex position, vertex texture coordinate, and vertex normal."""
     vert = -1
     tex = -1
     norm = -1
@@ -12,12 +13,15 @@ class FaceVertex:
         self.norm = normal
 
 class Face:
+    """Represents a face on the 3D object."""
     index : int = -1
     verts : List[FaceVertex] = []
-    face_center = -32
+    face_center = 0
     
     def get_face_center(self, results):
-        if(self.face_center != -32):
+        """Returns the center of the face in 3D space. Uses a cache if possible."""
+
+        if(self.face_center != 0):
             return self.face_center
         
         positions = []
@@ -36,7 +40,7 @@ class Face:
     def __init__(self, vertices : List[FaceVertex], index : int):
         self.verts = vertices
         self.index = index
-        self.face_center = -32
+        self.face_center = 0
 
     def __repr__(self):
         return str(self)
