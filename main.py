@@ -2,6 +2,7 @@ from os import path, scandir
 from Dijkstra import FindPath
 from Parser import Parse
 from Graph import ParseIntoGraph
+from Writer import OutputPathAsWavefront
 
 def main():
     use_examples = input("Use Examples? (y)/n: ")
@@ -69,8 +70,8 @@ def main():
     accepted = False
     
     while not accepted:
-        start_node = input(f"Enter start node (1 - {n}): ")
-        end_node = input(f"Enter end node (1 - {n}): ")
+        start_node = input(f"Enter start face (1 - {n}): ")
+        end_node = input(f"Enter end face (1 - {n}): ")
 
         if(not (start_node.isdigit() and end_node.isdigit())):
             print("Those are not numbers.")
@@ -90,7 +91,12 @@ def main():
         accepted = True
 
     
-    print(FindPath(graph, start_node - 1, end_node - 1))
+    shortest_path = FindPath(graph, start_node - 1, end_node - 1)
+    print(shortest_path)
+    
+    with open("examples/out.obj", "w") as f:
+        OutputPathAsWavefront(shortest_path, f, results)
+        print(f"Outputted path to {path.abspath('out.obj')}")
 
 if __name__ == "__main__":
     main()
