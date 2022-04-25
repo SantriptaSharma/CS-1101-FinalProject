@@ -25,7 +25,8 @@ def OutputPathAsWavefront(graph_path : List[int], out_file : TextIOWrapper, cont
                 normals_wanted.append(v.norm)
 
     out_file.write("".join(context.global_props))
-    out_file.write(f"o {context.object_props[0]}_Path_From_{graph_path[len(graph_path)-1]}_to_{graph_path[0]}\n")
+    name_string = context.object_props[0].removeprefix("o ").removesuffix("\n") + f"_Path_From_{graph_path[len(graph_path)-1]}_to_{graph_path[0]}\n"
+    out_file.write(name_string)
     context.object_props.pop(0)
     out_file.write("".join(context.object_props))
 
