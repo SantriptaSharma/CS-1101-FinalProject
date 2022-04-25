@@ -1,5 +1,5 @@
 import math
-from FibonacciHeap import Heap
+from FibonacciHeap import FibonacciHeap
 from Graph import Graph
 from typing import List
 
@@ -13,18 +13,18 @@ def FindPath(graph : Graph, from_node : int, to_node : int) -> List[int]:
 
     dist[from_node] = 0
 
-    priority_queue = Heap()
+    priority_queue = FibonacciHeap()
 
     for i in range(node_count):
-        queue_nodes[i] = priority_queue.add_with_priority(dist[i], i)
+        queue_nodes[i] = priority_queue.insert(dist[i], i)
 
-    while priority_queue.n != 0:
+    while priority_queue.min_node is not None and priority_queue.total_nodes > 0:
         u = priority_queue.extract_min()
-        for v in graph.neighbours(u.val):
-            alternate_path_through_u = dist[u.val] + graph.distance(u.val, v)
+        for v in graph.neighbours(u.value):
+            alternate_path_through_u = dist[u.value] + graph.distance(u.value, v)
             if(alternate_path_through_u < dist[v]):
                 dist[v] = alternate_path_through_u
-                prev[v] = u.val
+                prev[v] = u.value
                 priority_queue.decrease_key(queue_nodes[v], alternate_path_through_u)
     
     prev[from_node] = None
