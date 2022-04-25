@@ -1,4 +1,5 @@
 from os import path, scandir
+from Dijkstra import FindPath
 from Parser import Parse
 from Graph import ParseIntoGraph
 
@@ -63,11 +64,33 @@ def main():
         results = Parse(f)
     
     graph = ParseIntoGraph(results)
+    n = len(graph.data)
 
-    print("-"*30)
-    print("GRAPH DATA DUMP")
-    print(graph.data)
-    print("-"*30)
+    accepted = False
+    
+    while not accepted:
+        start_node = input(f"Enter start node (1 - {n}): ")
+        end_node = input(f"Enter end node (1 - {n}): ")
+
+        if(not (start_node.isdigit() and end_node.isdigit())):
+            print("Those are not numbers.")
+            continue
+
+        start_node = int(start_node)
+        end_node = int(end_node)
+
+        if(not (start_node in range(1, n+1) and end_node in range(1, n+1))):
+            print("That is out of the range.")
+            continue
+
+        if(start_node == end_node):
+            print("That is the same node twice. What are you doing?")
+            continue
+
+        accepted = True
+
+    
+    print(FindPath(graph, start_node - 1, end_node - 1))
 
 if __name__ == "__main__":
     main()
