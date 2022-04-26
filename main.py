@@ -92,7 +92,12 @@ def main():
 
     
     shortest_path = FindPath(graph, start_node - 1, end_node - 1)
-    print(shortest_path)
+    faces_repr = [repr(results.faces[start_node-1]) + f" at {results.faces[start_node-1].get_face_center(results)}", repr(results.faces[end_node-1]) + f" at {results.faces[end_node-1].get_face_center(results)}"]
+    if shortest_path == []:
+        print(f"No path found from face {faces_repr[0]} to face {faces_repr[1]}")
+        exit(0)
+    
+    print(f"Shortest path from face {faces_repr[0]} to face {faces_repr[1]}: {shortest_path}")
     
     with open("examples/out.obj", "w") as f:
         OutputPathAsWavefront(shortest_path, f, results)

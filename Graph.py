@@ -37,7 +37,8 @@ class Graph:
     def neighbours(self, v : int) -> List[int]:
         """Returns a list with the indices of all the connected neighbouring vertices of the vertex with index v."""
         if(self.representation == GraphRepresentation["LIST"]):
-            return self.data[v]
+            res = [neighbour_tuple[0] for neighbour_tuple in self.data[v]]
+            return res
         else:
             res = []
             for i in range(len(self.data)):

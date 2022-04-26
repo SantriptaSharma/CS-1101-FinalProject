@@ -49,8 +49,8 @@ def OutputPathAsWavefront(graph_path : List[int], out_file : TextIOWrapper, cont
         for v in face.verts:
             out_file.write(" ")
             nv = vmap[v.vert]
-            nt = tmap[v.tex]
-            nn = nmap[v.norm]
+            nt = tmap[v.tex] if v.tex != -1 else v.tex
+            nn = nmap[v.norm] if v.norm != -1 else v.norm
             out_file.write(f"{nv + 1}/{nt + 1 if nt != -1 else ''}/{nn + 1 if nn != -1 else ''}")
         
         out_file.write("\n")
