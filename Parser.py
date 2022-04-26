@@ -113,10 +113,13 @@ def ConsumeFace(results: ParseResults, tokens : List[str]):
     
     results.faces.append(this_face)
 
-function_table = {"v": ConsumeVertex, "vt": ConsumeTexture, "vn": ConsumeNormal, "f": ConsumeFace}
+def ConsumeVoid(results : ParseResults, tokens : List[str]):
+    pass
+
+function_table = {"v": ConsumeVertex, "vt": ConsumeTexture, "vn": ConsumeNormal, "f": ConsumeFace, "l": ConsumeVoid}
 
 def Parse(wavefront : TextIOWrapper) -> ParseResults:
-    """Pareses a given input stream (assumed to be a .obj file) and returns a ParseResults object."""
+    """Parses a given input stream (assumed to be a .obj file) and returns a ParseResults object."""
     result = ParseResults()
     in_object = False
     for line in wavefront.readlines():
