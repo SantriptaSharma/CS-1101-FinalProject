@@ -75,6 +75,8 @@ def ParseIntoGraph(results : ParseResults, forcetype = -1) -> Graph:
     if(forcetype != -1):
         graph_type = forcetype
 
+    print(f"Using graph type: Adjacency {'List' if graph_type == GraphRepresentation['LIST'] else 'Matrix'}")
+
     data = []
 
     if(graph_type == GraphRepresentation["LIST"]):
